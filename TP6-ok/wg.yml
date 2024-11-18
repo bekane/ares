@@ -1,0 +1,56 @@
+---
+- name: Setup WireGuard on two machines
+  hosts: all
+  become: yes
+  tasks:
+    # Step 1: Install WireGuard tools
+    - name: Install WireGuard and curl on client and target
+      when: inventory_hostname != 'router'
+      apk:
+        name:
+          - wireguard-tools
+        state: present
+        update_cache: true
+
+    # Step 2: Share public keys between machines (via Ansible hostvars)
+    - name: Store public keys of target
+      copy:
+        src: ./target/
+        dest: /etc/wireguard
+      when: inventory_hostname == 'target'
+
+    - name: Store public keys of client
+      copy:
+        src: ./client/
+        dest: /etc/wireguard
+      when: inventory_hostname == 'client'
+
+    - name: Install nginx on target
+      when: inventory_hostname == 'target'
+      apk:
+        name:
+          - nginx
+        state: present
+        update_cache: true
+
+    - name: Starting nginx on target
+      when: inventory_hostname == 'target'
+      service:
+        name: nginx
+        state: started
+
+    # Step 4: allow target to route client request to internet
+    - name: Configure traffic flow on target
+      shell: |
+        sysctl -w net.ipv4.ip_forward=1
+        iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE
+        exit 0
+      when: inventory_hostname == 'target'
+
+    # Step 5: Bring up the WireGuard interface
+    - name: Enable and start WireGuard interface on client and target
+      shell: |
+        wg-quick down wg0
+        wg-quick up wg0
+        exit 0
+      when: inventory_hostname != 'router'
