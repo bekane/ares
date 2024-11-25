@@ -1,5 +1,3 @@
-Voici une version corrigée et cohérente du TP 7 sur la mise en œuvre automatisée de VXLAN pour la virtualisation réseau :
-
 ---
 
 ### TP 7 : Mise en œuvre automatisée de VXLAN pour la virtualisation réseau
