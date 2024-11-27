@@ -1,0 +1,5 @@
+
+ip link add vxlan200 type vxlan id 200 remote 10.10.1.1 dstport 4789 dev enp6s0f0
+ip link set vxlan200 up
+brctl addif virbr1 vxlan200
+

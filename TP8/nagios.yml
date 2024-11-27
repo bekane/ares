@@ -1,0 +1,61 @@
+---
+- name: deploy vxlan infrastructure
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Apt update cache
+      become: yes
+      apt:
+        update_cache: yes
+    - name: Install required package on nagios core
+      become: yes
+      apt:
+        name:
+          - autoconf
+          - gcc
+          - libc6
+          - make
+          - wget
+          - unzip
+          - apache2
+          - php8.1
+          - libapache2-mod-php8.1
+          - libgd-dev
+          - libssl-dev
+        state: present
+      when: inventory_hostname == 'node0'
+
+    - name: Install required package on host to be monitored
+      become: yes
+      apt:
+        name:
+          - autoconf
+          - gcc
+          - libc6
+          - wget
+          - unzip
+          - make 
+          - dc 
+          - gettext
+          - libssl-dev 
+          - libmcrypt-dev 
+          - build-essential 
+        state: present
+      when: inventory_hostname == 'node1'
+
+    - name: Install nagios core
+      script: ./nagios_core.sh
+      when: inventory_hostname == 'node0'
+      
+    - name: Install nagios core nrpe
+      script: ./core_nrpe.sh
+      when: inventory_hostname == 'node0'
+
+    - name: Install nagios core plugin nrpe
+      script: ./nagios_core_plugins.sh
+      when: inventory_hostname == 'node0'
+
+
+    - name: Install nagios plugins nrpe
+      script: ./nrpre_daemon_plugin.sh
+      when: inventory_hostname == 'node1'

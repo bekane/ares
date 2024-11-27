@@ -1,0 +1,37 @@
+---
+- name: deploy vxlan infrastructure
+  hosts: all
+  tasks:
+    # Ici on sauvegarde les addresses ip des machines dans la variable hostvars['nom_machine']
+    - name: Set a fact, registering ip address for next usage
+      set_fact:
+        ip: "{{ansible_facts['enp6s0f0']['ipv4']['address'] }}"
+
+    # synchronize les artefacts de node0 et node1 dans les machines hôtes correspondantes
+    - name : Sync Iac code on each node
+      synchronize:
+        src: "{{inventory_hostname}}"
+        dest: .
+
+    - name: Setup virtuals machines
+      shell: |
+        cd "{{inventory_hostname}}"
+        # Déployer l'infra avec tofu
+        exit 0
+
+    - name: Setup vxlan tunnel node0
+      become: yes
+      shell: |
+        # déployer le vxlan
+        # {{hostvars['node1']['ip']}} donne @ip de l'hôte distant node1
+        exit 0
+      when: inventory_hostname == 'node0'
+
+    - name: setup vxlan tunnel node1
+      become: yes
+      shell: |
+          # déplooyer le vxlan
+          {{hostvars['node0']['ip']}} donne @ip de l'hôte distant node0
+          exit 0
+      when: inventory_hostname == 'node1'
+
