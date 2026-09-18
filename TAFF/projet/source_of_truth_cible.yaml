@@ -1,0 +1,81 @@
+sites:
+  - name: platform
+    role: lab-infrastructure
+    prefixes:
+      - name: management
+        cidr: 10.0.10.0/24
+        vrf: admin
+      - name: underlay
+        cidr: 10.0.20.0/24
+        vrf: transport
+      - name: gre-lab
+        cidr: 100.64.0.0/30
+        vrf: transport
+  - name: site-1
+    role: simulated-site
+    prefixes:
+      - name: application-overlay
+        cidr: 172.16.30.0/24
+        vrf: prod
+  - name: site-2
+    role: simulated-site
+    prefixes:
+      - name: dmz
+        cidr: 192.0.2.0/27
+        vrf: dmz
+  - name: cloud
+    role: simulated-cloud
+    prefixes:
+      - name: cloud-application
+        cidr: 10.0.40.0/24
+        vrf: cloud
+
+vlans:
+  - id: 30
+    name: application
+    vni: 10030
+    vrf: prod
+  - id: 120
+    name: dmz
+    vni: 10120
+    vrf: dmz
+  - id: 140
+    name: cloud
+    vni: 10140
+    vrf: cloud
+
+policies:
+  - name: admin-to-infrastructure
+    src: admin
+    dst: transport
+    service: tcp/22,443
+    action: allow
+  - name: application-to-dmz-https
+    src: prod
+    dst: dmz
+    service: tcp/443
+    action: allow
+  - name: application-to-cloud-https
+    src: prod
+    dst: cloud
+    service: tcp/443
+    action: allow
+  - name: deny-dmz-to-admin
+    src: dmz
+    dst: admin
+    service: any
+    action: deny
+
+services:
+  - name: dns
+    critical: true
+    ha: true
+  - name: dhcp
+    critical: true
+    ha: true
+  - name: netbox
+    critical: true
+    ha: true
+  - name: app-cloud
+    critical: true
+    ha: true
