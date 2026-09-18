@@ -1,9 +1,0 @@
-Appréciation du travail. Il s’agit globalement d’une très bonne thèse. toto propose un
-outil efficace permettant de spécialiser la politique de gestion mémoire d’une application. Identifier
-une interface système offrant à la fois la flexibilité d’USM tout en préservant les performances est
-particulièrement difficile. Pour mettre en œuvre USM, toto a modifié Linux, l’un des
-logiciels les plus complexes qu’on est, et en particulier son gestionnaire mémoire, connu pour être
-l’une des parties les plus difficiles du noyau. Les évaluations montrent qu’USM n’engendre qu’un
-faible surcoût et qu’il permet d’optimiser significativement plusieurs applications. Ces résultats sont
-très encourageants et montrent que la proposition de thèse de toto a un excellent
-potentiel, tant sur le plan de la recherche que industriellement.
